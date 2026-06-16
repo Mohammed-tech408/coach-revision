@@ -16,15 +16,11 @@ import {
   type Flashcard,
   type GenerationMode,
   type QuizQuestion,
-  classNeedsSpecialty,
   modeDescriptions,
   modeIcons,
   modeLabels,
-  specialties,
-  studentClasses,
   subjects,
   suggestionsBySubject,
-  type StudentClass,
 } from "../lib/constants";
 import {
   buildShareText,
@@ -71,7 +67,7 @@ const modes: GenerationMode[] = ["chat", "fiche", "quiz", "flashcards", "plan"];
 
 export default function RevisionCoach() {
   const router = useRouter();
-  const { user, ready, logout, updateProfile } = useAuth();
+  const { user, ready, logout } = useAuth();
 
   const [mode, setMode] = useState<GenerationMode>("chat");
   const [subject, setSubject] = useState<string>(subjects[0]);
@@ -392,6 +388,9 @@ export default function RevisionCoach() {
             <a href="/" className="app-btn-ghost">
               Accueil
             </a>
+            <a href="/profil" className="app-btn-ghost">
+              Profil
+            </a>
             <a href="/examens" className="app-btn-ghost">
               Examens
             </a>
@@ -443,62 +442,6 @@ export default function RevisionCoach() {
             }}
           />
         )}
-
-        <div className="app-card mt-6 p-5">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label htmlFor="studentClass" className="app-label">
-                Ta classe
-              </label>
-              <select
-                id="studentClass"
-                value={user.studentClass}
-                onChange={(event) => {
-                  const nextClass = event.target.value as StudentClass;
-                  const message = updateProfile(nextClass, user.specialty);
-                  if (message) setError(message);
-                }}
-                className="app-input"
-              >
-                {studentClasses.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {classNeedsSpecialty(user.studentClass) && (
-              <div>
-                <label htmlFor="specialty" className="app-label">
-                  Ta spécialité
-                </label>
-                <select
-                  id="specialty"
-                  value={user.specialty}
-                  onChange={(event) => {
-                    const message = updateProfile(
-                      user.studentClass,
-                      event.target.value,
-                    );
-                    if (message) setError(message);
-                  }}
-                  className="app-input"
-                >
-                  <option value="">Choisir une spécialité</option>
-                  {specialties.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
-          </div>
-          <p className="mt-2 text-xs text-[var(--muted)]">
-            Le coach adapte ses réponses à ton niveau et à ta spécialité.
-          </p>
-        </div>
 
         <ExamRemindersPanel
           reminders={reminders}

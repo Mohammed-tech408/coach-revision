@@ -30,6 +30,7 @@ type AuthContextValue = {
     studentClass: StudentClass,
     specialty: string,
   ) => string | null;
+  updateName: (name: string) => string | null;
   logout: () => void;
 };
 
@@ -154,6 +155,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   }
 
+  function updateName(name: string) {
+    if (!user) return "Connecte-toi pour modifier ton profil.";
+
+    const trimmedName = name.trim();
+    if (!trimmedName) return "Indique ton prénom.";
+
+    const updatedUser: SessionUser = { ...user, name: trimmedName };
+    const users = loadUsers().map((item) =>
+      item.id === user.id
+        ? { ...item, name: trimmedName }
+        : item,
+    );
+    saveUsers(users);
+    persistSession(updatedUser);
+    return null;
+  }
+
   function updateProfile(studentClass: StudentClass, specialty: string) {
     if (!user) return "Connecte-toi pour modifier ton profil.";
 
@@ -183,7 +201,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, ready, login, register, updateProfile, logout }}
+      value={{ user, ready, login, register, updateProfile, updateName, logout }}
     >
       {children}
     </AuthContext.Provider>

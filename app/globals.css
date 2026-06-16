@@ -486,6 +486,46 @@ html:not(.dark) .app-stat {
   color: var(--foreground);
 }
 
+.app-profile-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.app-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 9999px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--primary-gradient);
+  box-shadow: var(--card-shadow);
+}
+
+.app-profile-stat-card {
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--card-hover);
+  padding: 1rem 1.1rem;
+}
+
+.app-profile-stat-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.app-profile-stat-value {
+  margin-top: 0.35rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
 .app-workspace {
   display: grid;
   gap: 1.5rem;
