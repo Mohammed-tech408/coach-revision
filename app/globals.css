@@ -586,6 +586,52 @@ html:not(.dark) .app-panel {
   background: color-mix(in srgb, var(--danger) 8%, var(--card-hover));
 }
 
+.app-exam-hero {
+  border-radius: 1.5rem;
+  padding: 2rem;
+  color: white;
+  box-shadow: var(--card-shadow);
+}
+
+.app-exam-hero-brevet {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
+}
+
+.app-exam-hero-bac {
+  background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #a855f7 100%);
+}
+
+.app-exam-countdown {
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+}
+
+.app-exam-card {
+  display: block;
+  border-radius: 1.25rem;
+  border: 1px solid var(--border);
+  padding: 1.75rem;
+  color: white;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: var(--card-shadow);
+}
+
+.app-exam-card:hover {
+  transform: translateY(-2px);
+}
+
+.app-exam-card-brevet {
+  background: linear-gradient(145deg, #4338ca 0%, #6366f1 100%);
+}
+
+.app-exam-card-bac {
+  background: linear-gradient(145deg, #5b21b6 0%, #9333ea 100%);
+}
+
 /* Dark mode readability overrides for legacy Tailwind classes */
 html.dark .text-slate-900 { color: var(--foreground); }
 html.dark .text-slate-700 { color: #e9e5ff; }

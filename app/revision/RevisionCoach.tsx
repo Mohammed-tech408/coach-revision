@@ -368,6 +368,9 @@ export default function RevisionCoach() {
             <a href="/" className="app-btn-ghost">
               Accueil
             </a>
+            <a href="/examens" className="app-btn-ghost">
+              Examens
+            </a>
           </div>
         </div>
       </header>

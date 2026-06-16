@@ -106,6 +106,7 @@ export type ConversationEntry = {
   question: string;
   answer: string;
   createdAt: string;
+  diploma?: "brevet" | "bac";
 };
 
 export type QuizQuestion = {

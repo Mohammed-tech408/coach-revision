@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { GenerationMode } from "@/app/lib/constants";
+import type { ExamDiploma } from "@/app/lib/exam-constants";
 import { buildUserContent, getSystemPrompt } from "@/app/lib/ai-prompts";
 import {
   formatAiError,
@@ -29,6 +30,10 @@ export async function POST(request: Request) {
     const hoursPerDay = Number(body.hoursPerDay);
     const studentClass = (body.studentClass as string) || "Seconde";
     const specialty = (body.specialty as string) || "";
+    const examType =
+      body.examType === "brevet" || body.examType === "bac"
+        ? (body.examType as ExamDiploma)
+        : undefined;
 
     if (!question || typeof question !== "string") {
       return NextResponse.json(
@@ -44,7 +49,12 @@ export async function POST(request: Request) {
       );
     }
 
-    const systemPrompt = getSystemPrompt(mode, studentClass, specialty || undefined);
+    const systemPrompt = getSystemPrompt(
+      mode,
+      studentClass,
+      specialty || undefined,
+      examType,
+    );
     const userContent = buildUserContent(
       mode,
       subject,
@@ -54,6 +64,7 @@ export async function POST(request: Request) {
       examDate,
       daysUntilExam,
       hoursPerDay,
+      examType,
     );
 
     const answer = await generateAiText(

@@ -19,9 +19,14 @@ export function HomeHeader() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           {ready && user ? (
-            <a href="/revision" className="app-btn-primary !py-2 !px-4 text-sm">
-              Mon espace
-            </a>
+            <>
+              <a href="/examens" className="app-btn-ghost">
+                Examens
+              </a>
+              <a href="/revision" className="app-btn-primary !py-2 !px-4 text-sm">
+                Mon espace
+              </a>
+            </>
           ) : (
             <>
               <a href="/login" className="app-btn-ghost">

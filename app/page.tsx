@@ -130,6 +130,37 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="app-section-alt py-20">
+          <div className="mx-auto max-w-6xl px-6">
+            <h2 className="text-3xl font-bold">Espace Brevet & Bac</h2>
+            <p className="mt-4 max-w-2xl text-lg text-[var(--muted)]">
+              Deux espaces dédiés pour préparer le DNB et le baccalauréat avec
+              des conseils, fiches et quiz adaptés à chaque épreuve.
+            </p>
+            <div className="mt-10 grid gap-6 md:grid-cols-2">
+              <a href="/examens/brevet" className="app-exam-card app-exam-card-brevet">
+                <span className="text-4xl">🎓</span>
+                <h3 className="mt-4 text-2xl font-bold">Brevet des collèges</h3>
+                <p className="mt-2 text-sm leading-7 opacity-90">
+                  Français, maths, histoire-géo, sciences et anglais — entraîne-toi
+                  au format du DNB.
+                </p>
+              </a>
+              <a href="/examens/bac" className="app-exam-card app-exam-card-bac">
+                <span className="text-4xl">🏆</span>
+                <h3 className="mt-4 text-2xl font-bold">Baccalauréat</h3>
+                <p className="mt-2 text-sm leading-7 opacity-90">
+                  Dissertation, philo, spécialités, grand oral — prépare chaque
+                  épreuve du bac.
+                </p>
+              </a>
+            </div>
+            <a href="/examens" className="app-btn-secondary mt-8 inline-flex">
+              Voir tous les espaces examens
+            </a>
+          </div>
+        </section>
+
         <section className="mx-auto max-w-6xl px-6 pb-20">
           <div className="app-cta">
             <h2 className="text-3xl font-bold">

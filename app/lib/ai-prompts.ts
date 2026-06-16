@@ -1,12 +1,31 @@
 import type { GenerationMode } from "./constants";
+import type { ExamDiploma } from "./exam-constants";
 
-export function basePrompt(studentClass: string, specialty?: string): string {
+export function basePrompt(
+  studentClass: string,
+  specialty?: string,
+  examType?: ExamDiploma,
+): string {
   let prompt =
     `Tu es un coach de révision bienveillant pour un élève de ${studentClass} en France. ` +
     "Réponds toujours en français, de façon claire et adaptée au niveau de cette classe.";
 
   if (specialty) {
     prompt += ` L'élève a choisi la spécialité : ${specialty}. Tiens-en compte dans tes explications et exemples.`;
+  }
+
+  if (examType === "brevet") {
+    prompt +=
+      " L'élève prépare le Diplôme National du Brevet (DNB). Adapte tes réponses au format des épreuves du brevet " +
+      "(français, maths, histoire-géo-EMC, sciences, langues). Donne des conseils méthodologiques concrets " +
+      "et des entraînements proches des sujets officiels.";
+  }
+
+  if (examType === "bac") {
+    prompt +=
+      " L'élève prépare le baccalauréat. Adapte tes réponses aux épreuves du bac " +
+      "(français, philosophie, spécialités, grand oral, langues). Donne des méthodes de dissertation, " +
+      "commentaire, oral et des exemples de plans.";
   }
 
   return prompt;
@@ -16,8 +35,9 @@ export function getSystemPrompt(
   mode: GenerationMode,
   studentClass: string,
   specialty?: string,
+  examType?: ExamDiploma,
 ): string {
-  const intro = basePrompt(studentClass, specialty);
+  const intro = basePrompt(studentClass, specialty, examType);
 
   switch (mode) {
     case "fiche":
@@ -57,10 +77,14 @@ export function buildUserContent(
   examDate?: string,
   daysUntilExam?: number,
   hoursPerDay?: number,
+  examType?: ExamDiploma,
 ): string {
   const specialtyLine = specialty ? `\nSpécialité : ${specialty}` : "";
+  const examLine = examType
+    ? `\nPréparation examen : ${examType === "brevet" ? "Brevet des collèges" : "Baccalauréat"}`
+    : "";
   const base =
-    `Classe : ${studentClass}${specialtyLine}\nMatière : ${subject}\nThème / chapitre : ${question}`;
+    `Classe : ${studentClass}${specialtyLine}${examLine}\nMatière : ${subject}\nThème / chapitre : ${question}`;
 
   if (mode === "plan") {
     return (
