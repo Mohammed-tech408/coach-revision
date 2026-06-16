@@ -551,6 +551,41 @@ html:not(.dark) .app-panel {
   }
 }
 
+.app-progress {
+  height: 0.55rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--primary-soft) 70%, transparent);
+}
+
+.app-progress-bar {
+  height: 100%;
+  border-radius: 9999px;
+  background: var(--primary-gradient);
+  transition: width 0.3s ease;
+}
+
+.app-badge-card {
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  padding: 1rem;
+}
+
+.app-badge-earned {
+  background: color-mix(in srgb, var(--primary-soft) 80%, var(--card));
+  box-shadow: var(--glow);
+}
+
+.app-badge-locked {
+  opacity: 0.72;
+  background: var(--card-hover);
+}
+
+.app-reminder-urgent {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+  background: color-mix(in srgb, var(--danger) 8%, var(--card-hover));
+}
+
 /* Dark mode readability overrides for legacy Tailwind classes */
 html.dark .text-slate-900 { color: var(--foreground); }
 html.dark .text-slate-700 { color: #e9e5ff; }

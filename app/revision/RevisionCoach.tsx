@@ -3,9 +3,13 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../components/AuthProvider";
+import { BadgesPanel } from "../components/BadgesPanel";
+import { ExamRemindersPanel } from "../components/ExamRemindersPanel";
+import { SubjectProgressPanel } from "../components/SubjectProgressPanel";
 import { ThemeToggle } from "../components/ThemeToggle";
 import {
   type ConversationEntry,
+  type ExamReminder,
   type GenerationMode,
   type QuizQuestion,
   classNeedsSpecialty,
@@ -19,12 +23,30 @@ import {
   type StudentClass,
 } from "../lib/constants";
 import {
+  buildShareText,
+  copyShareText,
+  downloadPdfFiche,
+  downloadTextFile,
+  shareContent,
+} from "../lib/export-content";
+import {
   clearHistory,
   loadHistory,
   loadMessageCount,
   saveHistory,
   saveMessageCount,
 } from "../lib/storage";
+import {
+  computeBadges,
+  computeSubjectProgress,
+  daysUntilExam as getDaysUntilExam,
+  loadFavorites,
+  loadQuizHighScores,
+  loadReminders,
+  saveQuizHighScore,
+  saveReminders,
+  toggleFavorite,
+} from "../lib/user-progress";
 
 function formatDate(isoDate: string) {
   return new Intl.DateTimeFormat("fr-FR", {
@@ -56,7 +78,11 @@ export default function RevisionCoach() {
   const [history, setHistory] = useState<ConversationEntry[]>([]);
   const [messageCount, setMessageCount] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [shared, setShared] = useState(false);
   const [aiStatus, setAiStatus] = useState("Vérification...");
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [reminders, setReminders] = useState<ExamReminder[]>([]);
+  const [quizHighScores, setQuizHighScores] = useState(0);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,6 +95,9 @@ export default function RevisionCoach() {
     if (!user) return;
     setHistory(loadHistory(user.id));
     setMessageCount(loadMessageCount(user.id));
+    setFavoriteIds(loadFavorites(user.id));
+    setReminders(loadReminders(user.id));
+    setQuizHighScores(loadQuizHighScores(user.id));
   }, [user]);
 
   useEffect(() => {
@@ -91,6 +120,111 @@ export default function RevisionCoach() {
   }
 
   const suggestions = suggestionsBySubject[subject] ?? [];
+  const subjectProgress = computeSubjectProgress(history);
+  const badges = computeBadges(history, messageCount, quizHighScores);
+  const favoriteEntries = history.filter((entry) =>
+    favoriteIds.includes(entry.id),
+  );
+
+  function getSharePayload() {
+    return buildShareText({
+      subject,
+      question: question.trim(),
+      answer,
+      mode,
+    });
+  }
+
+  async function handleShareAnswer() {
+    if (!answer) return;
+    const text = getSharePayload();
+    const title = `Fiche ${subject} - Coach de Révision IA`;
+    const didShare = await shareContent(title, text);
+    if (didShare) {
+      setShared(true);
+      window.setTimeout(() => setShared(false), 2000);
+      return;
+    }
+    const copiedText = await copyShareText(text);
+    if (copiedText) {
+      setShared(true);
+      window.setTimeout(() => setShared(false), 2000);
+    } else {
+      setError("Impossible de partager le contenu.");
+    }
+  }
+
+  function handleDownloadText() {
+    if (!answer) return;
+    const text = getSharePayload();
+    const safeName = question
+      .slice(0, 30)
+      .replace(/[^\w\s-]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
+    downloadTextFile(`${mode}-${subject}-${safeName || "revision"}.txt`, text);
+  }
+
+  function handleDownloadPdf() {
+    if (!answer || !user) return;
+    downloadPdfFiche({
+      subject,
+      question: question.trim(),
+      answer,
+      studentName: user.name,
+    });
+  }
+
+  function handleToggleFavorite(entryId: string) {
+    if (!user) return;
+    setFavoriteIds(toggleFavorite(user.id, entryId));
+  }
+
+  function handleAddReminder(data: Omit<ExamReminder, "id" | "createdAt">) {
+    if (!user) return;
+    const next: ExamReminder[] = [
+      {
+        ...data,
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+      },
+      ...reminders,
+    ];
+    setReminders(next);
+    saveReminders(user.id, next);
+  }
+
+  function handleRemoveReminder(id: string) {
+    if (!user) return;
+    const next = reminders.filter((item) => item.id !== id);
+    setReminders(next);
+    saveReminders(user.id, next);
+  }
+
+  function handlePreparePlan(reminder: ExamReminder) {
+    const days = getDaysUntilExam(reminder.examDate);
+
+    setMode("plan");
+    setSubject(reminder.subject);
+    setQuestion(reminder.title);
+    setExamDate(reminder.examDate);
+    setDaysUntilExam(days !== null && days > 0 ? days : 1);
+    setAnswer("");
+    setQuiz([]);
+    setError("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function handleQuizCorrection() {
+    setQuizSubmitted(true);
+    if (!user || quiz.length === 0) return;
+
+    if (quizScore / quiz.length >= 0.7) {
+      const next = quizHighScores + 1;
+      setQuizHighScores(next);
+      saveQuizHighScore(user.id, next);
+    }
+  }
 
   function saveConversation(entry: ConversationEntry) {
     if (!user) return;
@@ -318,6 +452,17 @@ export default function RevisionCoach() {
           </p>
         </div>
 
+        <ExamRemindersPanel
+          reminders={reminders}
+          onAdd={handleAddReminder}
+          onRemove={handleRemoveReminder}
+          onPreparePlan={handlePreparePlan}
+        />
+
+        <SubjectProgressPanel progress={subjectProgress} />
+
+        <BadgesPanel badges={badges} />
+
         <div className="mt-8">
           <p className="app-label">Choisis un outil</p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -472,13 +617,38 @@ export default function RevisionCoach() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="app-panel-title">Résultat</h2>
               {answer && (
-                <button
-                  type="button"
-                  onClick={copyAnswer}
-                  className="app-btn-ghost !py-1.5 !px-3 text-xs"
-                >
-                  {copied ? "Copié !" : "Copier"}
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={copyAnswer}
+                    className="app-btn-ghost !py-1.5 !px-3 text-xs"
+                  >
+                    {copied ? "Copié !" : "Copier"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleShareAnswer}
+                    className="app-btn-ghost !py-1.5 !px-3 text-xs"
+                  >
+                    {shared ? "Partagé !" : "Partager"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDownloadText}
+                    className="app-btn-ghost !py-1.5 !px-3 text-xs"
+                  >
+                    Export .txt
+                  </button>
+                  {mode === "fiche" && (
+                    <button
+                      type="button"
+                      onClick={handleDownloadPdf}
+                      className="app-btn-primary !py-1.5 !px-3 text-xs"
+                    >
+                      PDF
+                    </button>
+                  )}
+                </div>
               )}
             </div>
 
@@ -564,7 +734,7 @@ export default function RevisionCoach() {
                 ))}
                 <button
                   type="button"
-                  onClick={() => setQuizSubmitted(true)}
+                  onClick={handleQuizCorrection}
                   className="app-btn-primary"
                 >
                   Corriger le quiz ({quizScore}/{quiz.length} si corrigé)
@@ -573,6 +743,55 @@ export default function RevisionCoach() {
             )}
           </div>
         </div>
+
+        {favoriteEntries.length > 0 && (
+          <section className="mt-12">
+            <h2 className="text-xl font-bold">Favoris</h2>
+            <div className="mt-4 space-y-4">
+              {favoriteEntries.map((entry) => (
+                <article key={entry.id} className="app-card p-5">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
+                    <span className="app-badge">{entry.subject}</span>
+                    <span className="app-badge">{modeLabels[entry.mode]}</span>
+                    <span>{formatDate(entry.createdAt)}</span>
+                  </div>
+                  <p className="mt-3 font-semibold">{entry.question}</p>
+                  <p className="mt-3 line-clamp-3 whitespace-pre-wrap text-sm text-[var(--muted)]">
+                    {entry.answer}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode(entry.mode);
+                        setSubject(entry.subject);
+                        setQuestion(entry.question);
+                        setAnswer(entry.answer);
+                        setError("");
+                        window.setTimeout(() => {
+                          resultsRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
+                        }, 100);
+                      }}
+                      className="cursor-pointer text-sm font-semibold text-[var(--primary-text)]"
+                    >
+                      Rouvrir
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleFavorite(entry.id)}
+                      className="cursor-pointer text-sm text-[var(--muted)] hover:text-red-500"
+                    >
+                      Retirer des favoris
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
 
         <section className="mt-12">
           <div className="flex items-center justify-between gap-4">
@@ -596,10 +815,24 @@ export default function RevisionCoach() {
             <div className="mt-4 space-y-4">
               {history.map((entry) => (
                 <article key={entry.id} className="app-card p-5">
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
-                    <span className="app-badge">{entry.subject}</span>
-                    <span className="app-badge">{modeLabels[entry.mode]}</span>
-                    <span>{formatDate(entry.createdAt)}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
+                      <span className="app-badge">{entry.subject}</span>
+                      <span className="app-badge">{modeLabels[entry.mode]}</span>
+                      <span>{formatDate(entry.createdAt)}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleFavorite(entry.id)}
+                      className="cursor-pointer text-lg leading-none"
+                      aria-label={
+                        favoriteIds.includes(entry.id)
+                          ? "Retirer des favoris"
+                          : "Ajouter aux favoris"
+                      }
+                    >
+                      {favoriteIds.includes(entry.id) ? "★" : "☆"}
+                    </button>
                   </div>
                   <p className="mt-3 font-semibold">{entry.question}</p>
                   <p className="mt-3 line-clamp-3 whitespace-pre-wrap text-sm text-[var(--muted)]">

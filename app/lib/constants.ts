@@ -131,3 +131,27 @@ export type SessionUser = {
   studentClass: StudentClass;
   specialty: string;
 };
+
+export type ExamReminder = {
+  id: string;
+  subject: string;
+  title: string;
+  examDate: string;
+  createdAt: string;
+};
+
+export type SubjectProgress = {
+  subject: string;
+  sessions: number;
+  percent: number;
+};
+
+export type Badge = {
+  id: string;
+  emoji: string;
+  title: string;
+  description: string;
+  earned: boolean;
+};
+
+export const PROGRESS_GOAL_PER_SUBJECT = 10;
