@@ -42,13 +42,14 @@ export const subjects = [
 
 export type Subject = (typeof subjects)[number];
 
-export type GenerationMode = "chat" | "fiche" | "quiz" | "plan";
+export type GenerationMode = "chat" | "fiche" | "quiz" | "plan" | "flashcards";
 
 export const modeLabels: Record<GenerationMode, string> = {
   chat: "Coach IA",
   fiche: "Fiche de révision",
   quiz: "Quiz",
   plan: "Plan de révision",
+  flashcards: "Flashcards",
 };
 
 export const modeDescriptions: Record<GenerationMode, string> = {
@@ -56,6 +57,7 @@ export const modeDescriptions: Record<GenerationMode, string> = {
   fiche: "Génère une fiche claire avec les points essentiels à retenir.",
   quiz: "Entraîne-toi avec des questions à choix multiples corrigées.",
   plan: "Organise tes révisions jour par jour avant un contrôle.",
+  flashcards: "Révise avec des cartes question / réponse à retourner.",
 };
 
 export const modeIcons: Record<GenerationMode, string> = {
@@ -63,6 +65,7 @@ export const modeIcons: Record<GenerationMode, string> = {
   fiche: "📋",
   quiz: "🎯",
   plan: "📅",
+  flashcards: "🃏",
 };
 
 export const suggestionsBySubject: Record<string, string[]> = {
@@ -114,6 +117,11 @@ export type QuizQuestion = {
   options: string[];
   correctIndex: number;
   explanation: string;
+};
+
+export type Flashcard = {
+  front: string;
+  back: string;
 };
 
 export type StoredUser = {

@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     const answer = await generateAiText(
       systemPrompt,
       userContent,
-      mode === "quiz" ? 2048 : 1500,
+      mode === "quiz" || mode === "flashcards" ? 2048 : 1500,
     );
 
     if (!answer.trim()) {
@@ -85,6 +85,16 @@ export async function POST(request: Request) {
         const cleaned = answer.replace(/```json|```/g, "").trim();
         const quiz = JSON.parse(cleaned);
         return NextResponse.json({ answer, quiz });
+      } catch {
+        return NextResponse.json({ answer });
+      }
+    }
+
+    if (mode === "flashcards") {
+      try {
+        const cleaned = answer.replace(/```json|```/g, "").trim();
+        const flashcards = JSON.parse(cleaned);
+        return NextResponse.json({ answer, flashcards });
       } catch {
         return NextResponse.json({ answer });
       }

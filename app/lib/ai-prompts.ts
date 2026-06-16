@@ -53,6 +53,13 @@ export function getSystemPrompt(
         'au format : {"questions":[{"question":"...","options":["A","B","C","D"],"correctIndex":0,"explanation":"..."}]}. ' +
         "Crée 5 questions avec 4 options chacune, adaptées au niveau de la classe."
       );
+    case "flashcards":
+      return (
+        intro +
+        " Génère des flashcards de révision. Réponds UNIQUEMENT avec un JSON valide, sans texte avant ou après, " +
+        'au format : {"cards":[{"front":"Question ou mot","back":"Réponse ou définition"}]}. ' +
+        "Crée 8 cartes courtes, claires et adaptées au niveau."
+      );
     case "plan":
       return (
         intro +

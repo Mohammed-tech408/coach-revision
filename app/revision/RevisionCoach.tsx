@@ -4,12 +4,16 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../components/AuthProvider";
 import { BadgesPanel } from "../components/BadgesPanel";
+import { DailyGoalPanel } from "../components/DailyGoalPanel";
 import { ExamRemindersPanel } from "../components/ExamRemindersPanel";
+import { FlashcardDeck } from "../components/FlashcardDeck";
 import { SubjectProgressPanel } from "../components/SubjectProgressPanel";
+import { WeakSubjectPanel } from "../components/WeakSubjectPanel";
 import { ThemeToggle } from "../components/ThemeToggle";
 import {
   type ConversationEntry,
   type ExamReminder,
+  type Flashcard,
   type GenerationMode,
   type QuizQuestion,
   classNeedsSpecialty,
@@ -30,6 +34,11 @@ import {
   shareContent,
 } from "../lib/export-content";
 import {
+  loadDailyGoal,
+  markDailyGoalDone,
+  toggleDailyGoalItem,
+} from "../lib/daily-goal";
+import {
   clearHistory,
   loadHistory,
   loadMessageCount,
@@ -40,6 +49,7 @@ import {
   computeBadges,
   computeSubjectProgress,
   daysUntilExam as getDaysUntilExam,
+  getWeakestSubject,
   loadFavorites,
   loadQuizHighScores,
   loadReminders,
@@ -57,7 +67,7 @@ function formatDate(isoDate: string) {
   }).format(new Date(isoDate));
 }
 
-const modes: GenerationMode[] = ["chat", "fiche", "quiz", "plan"];
+const modes: GenerationMode[] = ["chat", "fiche", "quiz", "flashcards", "plan"];
 
 export default function RevisionCoach() {
   const router = useRouter();
@@ -83,6 +93,8 @@ export default function RevisionCoach() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
   const [reminders, setReminders] = useState<ExamReminder[]>([]);
   const [quizHighScores, setQuizHighScores] = useState(0);
+  const [dailyGoal, setDailyGoal] = useState(loadDailyGoal(""));
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -98,6 +110,7 @@ export default function RevisionCoach() {
     setFavoriteIds(loadFavorites(user.id));
     setReminders(loadReminders(user.id));
     setQuizHighScores(loadQuizHighScores(user.id));
+    setDailyGoal(loadDailyGoal(user.id));
   }, [user]);
 
   useEffect(() => {
@@ -121,6 +134,7 @@ export default function RevisionCoach() {
 
   const suggestions = suggestionsBySubject[subject] ?? [];
   const subjectProgress = computeSubjectProgress(history);
+  const weakestSubject = getWeakestSubject(subjectProgress);
   const badges = computeBadges(history, messageCount, quizHighScores);
   const favoriteEntries = history.filter((entry) =>
     favoriteIds.includes(entry.id),
@@ -267,6 +281,7 @@ export default function RevisionCoach() {
     setError("");
     setAnswer("");
     setQuiz([]);
+    setFlashcards([]);
     setQuizAnswers([]);
     setQuizSubmitted(false);
 
@@ -299,6 +314,15 @@ export default function RevisionCoach() {
         const questions = data.quiz.questions as QuizQuestion[];
         setQuiz(questions);
         setQuizAnswers(Array(questions.length).fill(-1));
+        setDailyGoal(markDailyGoalDone(user.id, "quiz"));
+      }
+
+      if (mode === "flashcards" && data.flashcards?.cards) {
+        setFlashcards(data.flashcards.cards as Flashcard[]);
+      }
+
+      if (mode === "fiche") {
+        setDailyGoal(markDailyGoalDone(user.id, "fiche"));
       }
 
       saveConversation({
@@ -399,6 +423,27 @@ export default function RevisionCoach() {
           </div>
         </div>
 
+        <DailyGoalPanel
+          goal={dailyGoal}
+          onToggle={(type) => {
+            if (!user) return;
+            setDailyGoal(toggleDailyGoalItem(user.id, type));
+          }}
+        />
+
+        {weakestSubject && (
+          <WeakSubjectPanel
+            weakest={weakestSubject}
+            onRevise={(nextSubject) => {
+              setSubject(nextSubject);
+              setMode("fiche");
+              setQuestion(`Révision de ${nextSubject} — points essentiels`);
+              setError("");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+          />
+        )}
+
         <div className="app-card mt-6 p-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -477,6 +522,7 @@ export default function RevisionCoach() {
                   setMode(item);
                   setAnswer("");
                   setQuiz([]);
+                  setFlashcards([]);
                   setError("");
                 }}
                 className={mode === item ? "app-tab app-tab-active" : "app-tab"}
@@ -514,7 +560,7 @@ export default function RevisionCoach() {
             </select>
           </div>
 
-          {mode === "chat" && (
+          {(mode === "chat" || mode === "flashcards") && (
             <div>
               <p className="app-label">Suggestions de questions</p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -538,6 +584,8 @@ export default function RevisionCoach() {
                 ? "Chapitre à réviser"
                 : mode === "quiz"
                   ? "Thème du quiz"
+                  : mode === "flashcards"
+                    ? "Thème des flashcards"
                   : mode === "fiche"
                     ? "Thème de la fiche"
                     : "Ta question"}
@@ -607,10 +655,12 @@ export default function RevisionCoach() {
               ? "Génération en cours..."
               : mode === "chat"
                 ? "Demander au coach"
-                : mode === "fiche"
-                  ? "Générer la fiche"
-                  : mode === "quiz"
-                    ? "Générer le quiz"
+                : mode === "quiz"
+                  ? "Générer le quiz"
+                  : mode === "flashcards"
+                    ? "Générer les flashcards"
+                  : mode === "fiche"
+                    ? "Générer la fiche"
                     : "Générer le plan"}
           </button>
             </form>
@@ -675,7 +725,7 @@ export default function RevisionCoach() {
               </div>
             )}
 
-            {!loading && !error && !answer && quiz.length === 0 && (
+            {!loading && !error && !answer && quiz.length === 0 && flashcards.length === 0 && (
               <div className="app-empty mt-6">
                 <p className="text-3xl">{modeIcons[mode]}</p>
                 <p className="mt-4 font-medium">Aucun résultat pour l&apos;instant</p>
@@ -685,11 +735,15 @@ export default function RevisionCoach() {
               </div>
             )}
 
-            {!loading && answer && (
+            {!loading && answer && mode !== "flashcards" && (
               <div className="app-answer mt-6">
                 <p className="app-answer-title">{modeLabels[mode]}</p>
                 <div className="app-answer-body">{answer}</div>
               </div>
+            )}
+
+            {!loading && flashcards.length > 0 && (
+              <FlashcardDeck cards={flashcards} />
             )}
 
             {!loading && quiz.length > 0 && (

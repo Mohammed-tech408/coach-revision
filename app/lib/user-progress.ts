@@ -90,6 +90,20 @@ export function computeSubjectProgress(
   });
 }
 
+export function getWeakestSubject(
+  progress: SubjectProgress[],
+): SubjectProgress | null {
+  if (progress.length === 0) return null;
+
+  return progress.reduce((weakest, current) => {
+    if (current.sessions < weakest.sessions) return current;
+    if (current.sessions === weakest.sessions && current.percent < weakest.percent) {
+      return current;
+    }
+    return weakest;
+  });
+}
+
 export function daysUntilExam(examDate: string): number | null {
   if (!examDate) return null;
 

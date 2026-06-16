@@ -3,6 +3,8 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./AuthProvider";
+import { GrandOralPanel } from "./GrandOralPanel";
+import { GradeSimulatorPanel } from "./GradeSimulatorPanel";
 import { ThemeToggle } from "./ThemeToggle";
 import type { ConversationEntry, GenerationMode, QuizQuestion } from "../lib/constants";
 import {
@@ -278,6 +280,15 @@ export function ExamCoach({ diploma }: Props) {
             ))}
           </ul>
         </div>
+
+        <GradeSimulatorPanel diploma={diploma} />
+
+        {diploma === "bac" && (
+          <GrandOralPanel
+            studentClass={user.studentClass}
+            specialty={user.specialty}
+          />
+        )}
 
         <div className="mt-8">
           <p className="app-label">Outils de préparation</p>
