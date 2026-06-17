@@ -4,7 +4,6 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../components/AuthProvider";
 import { BadgesPanel } from "../components/BadgesPanel";
-import { PwaInstallPrompt } from "../components/PwaInstallPrompt";
 import { SubjectProgressPanel } from "../components/SubjectProgressPanel";
 import { ThemeToggle } from "../components/ThemeToggle";
 import {
@@ -193,8 +192,6 @@ export default function ProfilePage() {
             </div>
           </div>
         </section>
-
-        <PwaInstallPrompt />
 
         <section className="app-card mt-8 p-5">
           <h2 className="text-xl font-bold">Activité</h2>

@@ -526,17 +526,12 @@ html:not(.dark) .app-stat {
   color: var(--foreground);
 }
 
-.app-streak-card,
-.app-pwa-card {
+.app-streak-card {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.25rem;
-}
-
-.app-streak-card {
   justify-content: flex-start;
+  gap: 1.25rem;
 }
 
 .app-streak-icon {
