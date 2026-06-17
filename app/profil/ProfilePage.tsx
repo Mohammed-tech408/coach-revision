@@ -44,9 +44,18 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (!user) return;
-    setName(user.name);
-    setStudentClass(user.studentClass);
-    setSpecialty(user.specialty);
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setName(user.name);
+      setStudentClass(user.studentClass);
+      setSpecialty(user.specialty);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   if (!ready || !user) {

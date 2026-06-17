@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useAuth } from "../components/AuthProvider";
@@ -28,13 +29,13 @@ export function ExamHub() {
     <div className="app-page">
       <header className="app-header">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-          <a href="/" className="app-brand">
+          <Link href="/" className="app-brand">
             Coach de Révision IA
-          </a>
+          </Link>
           <div className="flex items-center gap-3">
-            <a href="/revision" className="app-btn-ghost">
+            <Link href="/revision" className="app-btn-ghost">
               Révision
-            </a>
+            </Link>
             <ThemeToggle />
           </div>
         </div>
@@ -53,7 +54,7 @@ export function ExamHub() {
           {(["brevet", "bac"] as const).map((diploma) => {
             const config = diplomaConfig[diploma];
             return (
-              <a
+              <Link
                 key={diploma}
                 href={`/examens/${diploma}`}
                 className={`app-exam-card app-exam-card-${diploma}`}
@@ -69,7 +70,7 @@ export function ExamHub() {
                 <span className="app-btn-primary mt-6 inline-flex">
                   Entrer dans l&apos;espace {config.shortTitle}
                 </span>
-              </a>
+              </Link>
             );
           })}
         </div>

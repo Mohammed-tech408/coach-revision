@@ -19,7 +19,6 @@ import {
   buildShareText,
   copyShareText,
   downloadPdfFiche,
-  downloadTextFile,
   shareContent,
 } from "../lib/export-content";
 import {
@@ -73,9 +72,18 @@ export function ExamCoach({ diploma }: Props) {
 
   useEffect(() => {
     if (!user) return;
-    const allHistory = loadHistory(user.id);
-    setHistory(allHistory.filter((entry) => entry.diploma === diploma));
-    setMessageCount(loadMessageCount(user.id));
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) return;
+      const allHistory = loadHistory(user.id);
+      setHistory(allHistory.filter((entry) => entry.diploma === diploma));
+      setMessageCount(loadMessageCount(user.id));
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, diploma]);
 
   if (!ready || !user) {

@@ -78,18 +78,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(SESSION_KEY);
-      if (!raw) return;
+    queueMicrotask(() => {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (!raw) return;
 
-      const session = JSON.parse(raw) as SessionUser;
-      const stored = loadUsers().find((item) => item.id === session.id);
-      setUser(stored ? toSessionUser(stored) : session);
-    } catch {
-      localStorage.removeItem(SESSION_KEY);
-    } finally {
-      setReady(true);
-    }
+        const session = JSON.parse(raw) as SessionUser;
+        const stored = loadUsers().find((item) => item.id === session.id);
+        setUser(stored ? toSessionUser(stored) : session);
+      } catch {
+        localStorage.removeItem(SESSION_KEY);
+      } finally {
+        setReady(true);
+      }
+    });
   }, []);
 
   function persistSession(sessionUser: SessionUser | null) {

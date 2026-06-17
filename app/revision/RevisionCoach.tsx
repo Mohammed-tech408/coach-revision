@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../components/AuthProvider";
@@ -101,12 +102,21 @@ export default function RevisionCoach() {
 
   useEffect(() => {
     if (!user) return;
-    setHistory(loadHistory(user.id));
-    setMessageCount(loadMessageCount(user.id));
-    setFavoriteIds(loadFavorites(user.id));
-    setReminders(loadReminders(user.id));
-    setQuizHighScores(loadQuizHighScores(user.id));
-    setDailyGoal(loadDailyGoal(user.id));
+    let cancelled = false;
+
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setHistory(loadHistory(user.id));
+      setMessageCount(loadMessageCount(user.id));
+      setFavoriteIds(loadFavorites(user.id));
+      setReminders(loadReminders(user.id));
+      setQuizHighScores(loadQuizHighScores(user.id));
+      setDailyGoal(loadDailyGoal(user.id));
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   useEffect(() => {
@@ -265,7 +275,7 @@ export default function RevisionCoach() {
     }
   }
 
-  function useSuggestion(text: string) {
+  function applySuggestion(text: string) {
     setQuestion(text);
     setError("");
   }
@@ -385,15 +395,15 @@ export default function RevisionCoach() {
             >
               Déconnexion
             </button>
-            <a href="/" className="app-btn-ghost">
+            <Link href="/" className="app-btn-ghost">
               Accueil
-            </a>
-            <a href="/profil" className="app-btn-ghost">
+            </Link>
+            <Link href="/profil" className="app-btn-ghost">
               Profil
-            </a>
-            <a href="/examens" className="app-btn-ghost">
+            </Link>
+            <Link href="/examens" className="app-btn-ghost">
               Examens
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -511,7 +521,7 @@ export default function RevisionCoach() {
                   <button
                     key={suggestion}
                     type="button"
-                    onClick={() => useSuggestion(suggestion)}
+                    onClick={() => applySuggestion(suggestion)}
                     className="app-chip text-left"
                   >
                     {suggestion}

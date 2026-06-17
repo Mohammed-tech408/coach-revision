@@ -65,7 +65,7 @@ export function computeRevisionStreak(
     activeDays.add(toDateKey(new Date()));
   }
 
-  let current = new Date();
+  const current = new Date();
   let streak = 0;
 
   while (activeDays.has(toDateKey(current))) {

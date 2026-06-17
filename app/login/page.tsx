@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../components/AuthProvider";
@@ -26,9 +27,9 @@ export default function LoginPage() {
     <div className="app-page">
       <header className="app-header">
         <div className="mx-auto flex max-w-md items-center justify-between px-6 py-4">
-          <a href="/" className="app-brand">
+          <Link href="/" className="app-brand">
             Coach de Révision IA
-          </a>
+          </Link>
           <ThemeToggle />
         </div>
       </header>
@@ -79,9 +80,12 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-[var(--muted)]">
             Pas encore de compte ?{" "}
-            <a href="/register" className="font-semibold text-[var(--primary-text)]">
+            <Link
+              href="/register"
+              className="font-semibold text-[var(--primary-text)]"
+            >
               Créer un compte
-            </a>
+            </Link>
           </p>
         </div>
       </main>
