@@ -4,6 +4,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../components/AuthProvider";
 import { BadgesPanel } from "../components/BadgesPanel";
+import { PwaInstallPrompt } from "../components/PwaInstallPrompt";
 import { SubjectProgressPanel } from "../components/SubjectProgressPanel";
 import { ThemeToggle } from "../components/ThemeToggle";
 import {
@@ -13,7 +14,11 @@ import {
   type StudentClass,
 } from "../lib/constants";
 import { loadDailyGoal } from "../lib/daily-goal";
-import { computeProfileStats, getInitials } from "../lib/profile-stats";
+import {
+  computeProfileStats,
+  computeRevisionStreak,
+  getInitials,
+} from "../lib/profile-stats";
 import { loadHistory, loadMessageCount } from "../lib/storage";
 import {
   computeBadges,
@@ -68,6 +73,7 @@ export default function ProfilePage() {
   const badges = computeBadges(history, messageCount, quizHighScores);
   const earnedBadges = badges.filter((badge) => badge.earned).length;
   const dailyDone = Number(dailyGoal.ficheDone) + Number(dailyGoal.quizDone);
+  const streak = computeRevisionStreak(history, dailyDone > 0);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -161,7 +167,34 @@ export default function ProfilePage() {
               {earnedBadges}/{badges.length}
             </p>
           </div>
+          <div className="app-stat">
+            <p className="app-stat-label">Streak</p>
+            <p className="app-stat-value">
+              {streak} jour{streak > 1 ? "s" : ""}
+            </p>
+          </div>
         </div>
+
+        <section className="app-card mt-8 p-5">
+          <div className="app-streak-card">
+            <div className="app-streak-icon" aria-hidden="true">
+              🔥
+            </div>
+            <div>
+              <h2 className="text-xl font-bold">Streak de révision</h2>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                Tu as révisé {streak} jour{streak > 1 ? "s" : ""} de suite.
+              </p>
+              <p className="mt-3 text-sm font-medium text-[var(--primary-text)]">
+                {streak === 0
+                  ? "Lance une fiche ou un quiz aujourd'hui pour commencer ta série."
+                  : "Continue demain pour garder ta série active."}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <PwaInstallPrompt />
 
         <section className="app-card mt-8 p-5">
           <h2 className="text-xl font-bold">Activité</h2>

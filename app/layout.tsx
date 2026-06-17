@@ -14,9 +14,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  applicationName: "Coach de Révision IA",
   title: "Coach de Révision IA",
   description:
     "Ton assistant intelligent pour réviser efficacement avant les contrôles et les examens.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "Coach IA",
+    statusBarStyle: "default",
+  },
+  icons: {
+    icon: "/pwa-icon.svg",
+    apple: "/pwa-icon.svg",
+  },
 };
 
 export default function RootLayout({

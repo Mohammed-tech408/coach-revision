@@ -526,6 +526,31 @@ html:not(.dark) .app-stat {
   color: var(--foreground);
 }
 
+.app-streak-card,
+.app-pwa-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.app-streak-card {
+  justify-content: flex-start;
+}
+
+.app-streak-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #f97316 0%, #ef4444 100%);
+  box-shadow: var(--card-shadow);
+  font-size: 1.7rem;
+}
+
 .app-workspace {
   display: grid;
   gap: 1.5rem;
