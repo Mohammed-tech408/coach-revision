@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../components/AuthProvider";
@@ -117,12 +118,12 @@ export default function ProfilePage() {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <ThemeToggle />
-            <a href="/revision" className="app-btn-ghost">
+            <Link href="/revision" className="app-btn-ghost">
               Réviser
-            </a>
-            <a href="/examens" className="app-btn-ghost">
+            </Link>
+            <Link href="/examens" className="app-btn-ghost">
               Examens
-            </a>
+            </Link>
             <button
               type="button"
               onClick={() => {

@@ -72,6 +72,22 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
+a,
+button,
+input,
+select,
+textarea {
+  outline-offset: 3px;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 45%, transparent);
+}
+
 /* Layout */
 .app-page {
   position: relative;
@@ -307,6 +323,8 @@ html:not(.dark) .app-tab {
 }
 
 html:not(.dark) .app-tab-active {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+  background: linear-gradient(135deg, #ffffff 0%, #eef2ff 100%);
   color: #111827;
 }
 

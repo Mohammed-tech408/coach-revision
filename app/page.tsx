@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { HomeHeader } from "./components/HomeHeader";
 import { HomeCtaActions, HomeHeroActions } from "./components/HomeHeroActions";
 
@@ -138,26 +139,26 @@ export default function Home() {
               des conseils, fiches et quiz adaptés à chaque épreuve.
             </p>
             <div className="mt-10 grid gap-6 md:grid-cols-2">
-              <a href="/examens/brevet" className="app-exam-card app-exam-card-brevet">
+              <Link href="/examens/brevet" className="app-exam-card app-exam-card-brevet">
                 <span className="text-4xl">🎓</span>
                 <h3 className="mt-4 text-2xl font-bold">Brevet des collèges</h3>
                 <p className="mt-2 text-sm leading-7 opacity-90">
                   Français, maths, histoire-géo, sciences et anglais — entraîne-toi
                   au format du DNB.
                 </p>
-              </a>
-              <a href="/examens/bac" className="app-exam-card app-exam-card-bac">
+              </Link>
+              <Link href="/examens/bac" className="app-exam-card app-exam-card-bac">
                 <span className="text-4xl">🏆</span>
                 <h3 className="mt-4 text-2xl font-bold">Baccalauréat</h3>
                 <p className="mt-2 text-sm leading-7 opacity-90">
                   Dissertation, philo, spécialités, grand oral — prépare chaque
                   épreuve du bac.
                 </p>
-              </a>
+              </Link>
             </div>
-            <a href="/examens" className="app-btn-secondary mt-8 inline-flex">
+            <Link href="/examens" className="app-btn-secondary mt-8 inline-flex">
               Voir tous les espaces examens
-            </a>
+            </Link>
           </div>
         </section>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./AuthProvider";
@@ -236,12 +237,12 @@ export function ExamCoach({ diploma }: Props) {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <a href="/examens" className="app-btn-ghost">
+            <Link href="/examens" className="app-btn-ghost">
               Examens
-            </a>
-            <a href="/revision" className="app-btn-ghost">
+            </Link>
+            <Link href="/revision" className="app-btn-ghost">
               Révision
-            </a>
+            </Link>
             <ThemeToggle />
             <button
               type="button"
