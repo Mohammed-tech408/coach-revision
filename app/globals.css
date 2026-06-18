@@ -138,10 +138,6 @@ html.dark .app-header {
   color: var(--primary-text);
 }
 
-html:not(.dark) .app-brand {
-  color: #111827;
-}
-
 .app-subtitle {
   font-size: 0.75rem;
   color: var(--muted);
@@ -308,6 +304,10 @@ html:not(.dark) .app-tab {
   background: var(--primary-gradient);
   color: white;
   box-shadow: 0 8px 20px -12px rgba(99, 102, 241, 0.9);
+}
+
+html:not(.dark) .app-tab-active {
+  color: #111827;
 }
 
 /* Forms */
