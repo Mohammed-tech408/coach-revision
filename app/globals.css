@@ -138,6 +138,10 @@ html.dark .app-header {
   color: var(--primary-text);
 }
 
+html:not(.dark) .app-brand {
+  color: #111827;
+}
+
 .app-subtitle {
   font-size: 0.75rem;
   color: var(--muted);
