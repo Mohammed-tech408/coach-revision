@@ -62,8 +62,11 @@ export function getSystemPrompt(
     default:
       return (
         intro +
-        " Explique simplement, avec des exemples concrets. Structure ta réponse avec des titres courts " +
-        "et des listes si utile. Termine par 2 ou 3 questions de révision pour tester l'élève."
+        " Réponds obligatoirement avec cette structure exacte et ces titres :\n\n" +
+        "Explication\nUne explication simple et adaptée au niveau de l'élève.\n\n" +
+        "Exemple\nUn exemple concret pour comprendre ou appliquer la notion.\n\n" +
+        "Astuce\nUne méthode, un moyen mnémotechnique ou une stratégie pour retenir.\n\n" +
+        "Mini Quiz\nUne ou plusieurs questions courtes pour vérifier la compréhension."
       );
   }
 }
