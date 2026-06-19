@@ -16,7 +16,6 @@ import {
   type ExamReminder,
   type Flashcard,
   type GenerationMode,
-  type QuizQuestion,
   modeDescriptions,
   modeIcons,
   modeLabels,
@@ -50,7 +49,6 @@ import {
   loadFavorites,
   loadQuizHighScores,
   loadReminders,
-  saveQuizHighScore,
   saveReminders,
   toggleFavorite,
 } from "../lib/user-progress";
@@ -64,7 +62,7 @@ function formatDate(isoDate: string) {
   }).format(new Date(isoDate));
 }
 
-const modes: GenerationMode[] = ["chat", "fiche", "quiz", "flashcards", "plan"];
+const modes: GenerationMode[] = ["chat", "fiche", "flashcards", "plan"];
 
 export default function RevisionCoach() {
   const router = useRouter();
@@ -77,9 +75,6 @@ export default function RevisionCoach() {
   const [daysUntilExam, setDaysUntilExam] = useState(7);
   const [hoursPerDay, setHoursPerDay] = useState(1);
   const [answer, setAnswer] = useState("");
-  const [quiz, setQuiz] = useState<QuizQuestion[]>([]);
-  const [quizAnswers, setQuizAnswers] = useState<number[]>([]);
-  const [quizSubmitted, setQuizSubmitted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<ConversationEntry[]>([]);
@@ -230,20 +225,8 @@ export default function RevisionCoach() {
     setExamDate(reminder.examDate);
     setDaysUntilExam(days !== null && days > 0 ? days : 1);
     setAnswer("");
-    setQuiz([]);
     setError("");
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function handleQuizCorrection() {
-    setQuizSubmitted(true);
-    if (!user || quiz.length === 0) return;
-
-    if (quizScore / quiz.length >= 0.7) {
-      const next = quizHighScores + 1;
-      setQuizHighScores(next);
-      saveQuizHighScore(user.id, next);
-    }
   }
 
   function saveConversation(entry: ConversationEntry) {
@@ -286,10 +269,7 @@ export default function RevisionCoach() {
     setLoading(true);
     setError("");
     setAnswer("");
-    setQuiz([]);
     setFlashcards([]);
-    setQuizAnswers([]);
-    setQuizSubmitted(false);
 
     try {
       const response = await fetch("/api/revision", {
@@ -316,19 +296,16 @@ export default function RevisionCoach() {
 
       setAnswer(data.answer);
 
-      if (mode === "quiz" && data.quiz?.questions) {
-        const questions = data.quiz.questions as QuizQuestion[];
-        setQuiz(questions);
-        setQuizAnswers(Array(questions.length).fill(-1));
-        setDailyGoal(markDailyGoalDone(user.id, "quiz"));
-      }
-
       if (mode === "flashcards" && data.flashcards?.cards) {
         setFlashcards(data.flashcards.cards as Flashcard[]);
       }
 
       if (mode === "fiche") {
         setDailyGoal(markDailyGoalDone(user.id, "fiche"));
+      }
+
+      if (mode === "chat") {
+        setDailyGoal(markDailyGoalDone(user.id, "quiz"));
       }
 
       saveConversation({
@@ -355,15 +332,6 @@ export default function RevisionCoach() {
     event.preventDefault();
     await generateContent();
   }
-
-  const quizScore =
-    quiz.length > 0
-      ? quiz.reduce(
-          (score, item, index) =>
-            score + (quizAnswers[index] === item.correctIndex ? 1 : 0),
-          0,
-        )
-      : 0;
 
   return (
     <div className="app-page">
@@ -413,8 +381,8 @@ export default function RevisionCoach() {
           <span className="app-gradient-title">Ton espace de révision</span>
         </h1>
         <p className="mt-3 text-[var(--muted)]">
-          Coach, fiches, quiz et plan personnalisé — tout est sauvegardé sur ton
-          compte.
+          Coach, fiches, flashcards et plan personnalisé — tout est sauvegardé sur
+          ton compte.
         </p>
 
         <div className="app-stats mt-8">
@@ -474,7 +442,6 @@ export default function RevisionCoach() {
                 onClick={() => {
                   setMode(item);
                   setAnswer("");
-                  setQuiz([]);
                   setFlashcards([]);
                   setError("");
                 }}
@@ -535,10 +502,8 @@ export default function RevisionCoach() {
             <label htmlFor="question" className="app-label">
               {mode === "plan"
                 ? "Chapitre à réviser"
-                : mode === "quiz"
-                  ? "Thème du quiz"
-                  : mode === "flashcards"
-                    ? "Thème des flashcards"
+                : mode === "flashcards"
+                  ? "Thème des flashcards"
                   : mode === "fiche"
                     ? "Thème de la fiche"
                     : "Ta question"}
@@ -608,10 +573,8 @@ export default function RevisionCoach() {
               ? "Génération en cours..."
               : mode === "chat"
                 ? "Demander au coach"
-                : mode === "quiz"
-                  ? "Générer le quiz"
-                  : mode === "flashcards"
-                    ? "Générer les flashcards"
+                : mode === "flashcards"
+                  ? "Générer les flashcards"
                   : mode === "fiche"
                     ? "Générer la fiche"
                     : "Générer le plan"}
@@ -678,7 +641,7 @@ export default function RevisionCoach() {
               </div>
             )}
 
-            {!loading && !error && !answer && quiz.length === 0 && flashcards.length === 0 && (
+            {!loading && !error && !answer && flashcards.length === 0 && (
               <div className="app-empty mt-6">
                 <p className="text-3xl">{modeIcons[mode]}</p>
                 <p className="mt-4 font-medium">Aucun résultat pour l&apos;instant</p>
@@ -697,59 +660,6 @@ export default function RevisionCoach() {
 
             {!loading && flashcards.length > 0 && (
               <FlashcardDeck cards={flashcards} />
-            )}
-
-            {!loading && quiz.length > 0 && (
-              <div className="mt-6 space-y-4">
-                {quiz.map((item, index) => (
-                  <article key={index} className="app-card p-5">
-                    <p className="font-semibold">
-                      {index + 1}. {item.question}
-                    </p>
-                    <div className="mt-3 space-y-2">
-                      {item.options.map((option, optionIndex) => (
-                        <label
-                          key={optionIndex}
-                          className="app-card-soft flex cursor-pointer items-center gap-2 px-3 py-2"
-                        >
-                          <input
-                            type="radio"
-                            name={`quiz-${index}`}
-                            checked={quizAnswers[index] === optionIndex}
-                            onChange={() => {
-                              const next = [...quizAnswers];
-                              next[index] = optionIndex;
-                              setQuizAnswers(next);
-                            }}
-                          />
-                          <span>{option}</span>
-                        </label>
-                      ))}
-                    </div>
-                    {quizSubmitted && (
-                      <p
-                        className={`mt-3 text-sm ${
-                          quizAnswers[index] === item.correctIndex
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {quizAnswers[index] === item.correctIndex
-                          ? "Bonne réponse !"
-                          : "Mauvaise réponse."}{" "}
-                        {item.explanation}
-                      </p>
-                    )}
-                  </article>
-                ))}
-                <button
-                  type="button"
-                  onClick={handleQuizCorrection}
-                  className="app-btn-primary"
-                >
-                  Corriger le quiz ({quizScore}/{quiz.length} si corrigé)
-                </button>
-              </div>
             )}
           </div>
         </div>

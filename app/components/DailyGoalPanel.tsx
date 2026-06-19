@@ -20,7 +20,8 @@ export function DailyGoalPanel({ goal, onToggle }: Props) {
         </span>
       </div>
       <p className="mt-1 text-sm text-[var(--muted)]">
-        Aujourd&apos;hui : 1 fiche + 1 quiz pour progresser régulièrement.
+        Aujourd&apos;hui : 1 fiche + 1 question au coach pour progresser
+        régulièrement.
       </p>
 
       <div className="mt-5 space-y-3">
@@ -38,7 +39,7 @@ export function DailyGoalPanel({ goal, onToggle }: Props) {
             checked={goal.quizDone}
             onChange={() => onToggle("quiz")}
           />
-          <span>Faire 1 quiz</span>
+          <span>Poser 1 question au coach</span>
         </label>
       </div>
 
