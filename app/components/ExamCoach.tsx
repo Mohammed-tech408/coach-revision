@@ -290,14 +290,12 @@ export function ExamCoach({ diploma }: Props) {
           </ul>
         </div>
 
-        <GradeSimulatorPanel diploma={diploma} />
+        <GradeSimulatorPanel />
 
-        {diploma === "bac" && (
-          <GrandOralPanel
-            studentClass={user.studentClass}
-            specialty={user.specialty}
-          />
-        )}
+        <GrandOralPanel
+          studentClass={user.studentClass}
+          specialty={user.specialty}
+        />
 
         <div className="mt-8">
           <p className="app-label">Outils de préparation</p>

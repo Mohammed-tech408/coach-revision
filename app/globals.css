@@ -675,10 +675,6 @@ html:not(.dark) .app-panel {
   box-shadow: var(--card-shadow);
 }
 
-.app-exam-hero-brevet {
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
-}
-
 .app-exam-hero-bac {
   background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 50%, #a855f7 100%);
 }
@@ -704,10 +700,6 @@ html:not(.dark) .app-panel {
 
 .app-exam-card:hover {
   transform: translateY(-2px);
-}
-
-.app-exam-card-brevet {
-  background: linear-gradient(145deg, #4338ca 0%, #6366f1 100%);
 }
 
 .app-exam-card-bac {

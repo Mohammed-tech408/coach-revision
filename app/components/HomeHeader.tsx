@@ -19,6 +19,9 @@ export function HomeHeader() {
         </Link>
         <div className="flex items-center gap-3">
           <ThemeToggle />
+          <Link href="/a-propos" className="app-btn-ghost">
+            À propos
+          </Link>
           {ready && user ? (
             <>
               <Link href="/examens" className="app-btn-ghost">

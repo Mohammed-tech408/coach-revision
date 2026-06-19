@@ -31,9 +31,7 @@ export async function POST(request: Request) {
     const studentClass = (body.studentClass as string) || "Seconde";
     const specialty = (body.specialty as string) || "";
     const examType =
-      body.examType === "brevet" || body.examType === "bac"
-        ? (body.examType as ExamDiploma)
-        : undefined;
+      body.examType === "bac" ? (body.examType as ExamDiploma) : undefined;
 
     if (!question || typeof question !== "string") {
       return NextResponse.json(

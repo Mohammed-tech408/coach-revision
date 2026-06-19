@@ -9,6 +9,7 @@ import {
 } from "react";
 import {
   classNeedsSpecialty,
+  normalizeStudentClass,
   type SessionUser,
   type StoredUser,
   type StudentClass,
@@ -51,7 +52,7 @@ function saveUsers(users: StoredUser[]) {
 }
 
 function toSessionUser(stored: StoredUser): SessionUser {
-  const studentClass = stored.studentClass || "Seconde";
+  const studentClass = normalizeStudentClass(stored.studentClass);
   const specialty =
     classNeedsSpecialty(studentClass) && stored.specialty
       ? stored.specialty

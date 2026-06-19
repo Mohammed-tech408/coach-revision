@@ -1,4 +1,4 @@
-export type ExamDiploma = "brevet" | "bac";
+export type ExamDiploma = "bac";
 
 export type ExamPrepMode = "chat" | "fiche" | "quiz" | "plan";
 
@@ -13,7 +13,7 @@ export const examModeDescriptions: Record<ExamPrepMode, string> = {
   chat: "Pose une question sur l'épreuve, la méthode ou un chapitre du programme.",
   fiche: "Génère une fiche ciblée sur le format et les attentes de l'examen.",
   quiz: "Entraîne-toi avec des questions proches de celles de l'examen.",
-  plan: "Organise tes révisions jour par jour avant le brevet ou le bac.",
+  plan: "Organise tes révisions jour par jour avant le bac.",
 };
 
 export const diplomaConfig: Record<
@@ -29,28 +29,6 @@ export const diplomaConfig: Record<
     defaultExamDate: string;
   }
 > = {
-  brevet: {
-    title: "Brevet des collèges",
-    shortTitle: "Brevet",
-    emoji: "🎓",
-    targetClass: "3ème",
-    description:
-      "Prépare le DNB avec des fiches, quiz et plans adaptés aux épreuves de français, maths, histoire-géo, sciences et langues.",
-    subjects: [
-      "Français",
-      "Mathématiques",
-      "Histoire-Géographie-EMC",
-      "Sciences (SVT + Physique-Chimie)",
-      "Anglais",
-    ],
-    tips: [
-      "Entraîne-toi sur la rédaction et la grammaire en français.",
-      "Révise les automatismes en mathématiques (calcul, géométrie, proportionnalité).",
-      "Fais des sujets chronométrés pour gérer ton temps le jour J.",
-      "Relis les consignes deux fois avant de répondre.",
-    ],
-    defaultExamDate: "2026-06-25",
-  },
   bac: {
     title: "Baccalauréat",
     shortTitle: "Bac",
@@ -81,33 +59,6 @@ export const examSuggestions: Record<
   ExamDiploma,
   Record<string, string[]>
 > = {
-  brevet: {
-    Français: [
-      "Comment réussir la rédaction du brevet ?",
-      "Quelles figures de style reviser pour le brevet ?",
-      "Comment analyser un paragraphe au brevet ?",
-    ],
-    Mathématiques: [
-      "Quels chapitres de maths sont essentiels pour le brevet ?",
-      "Comment réussir les exercices de géométrie au brevet ?",
-      "Donne-moi une méthode pour les problèmes de proportionnalité.",
-    ],
-    "Histoire-Géographie-EMC": [
-      "Quels thèmes d'histoire-géo reviser pour le brevet ?",
-      "Comment répondre à une question de géographie au brevet ?",
-      "Explique la démarche pour analyser un document histoire-géo.",
-    ],
-    "Sciences (SVT + Physique-Chimie)": [
-      "Quels sont les grands thèmes sciences pour le brevet ?",
-      "Comment réussir l'épreuve sciences du brevet ?",
-      "Rappelle-moi les bases en SVT et physique-chimie pour le DNB.",
-    ],
-    Anglais: [
-      "Comment préparer l'oral d'anglais au brevet ?",
-      "Quels temps et structures reviser pour le brevet anglais ?",
-      "Donne-moi des phrases utiles pour l'épreuve d'anglais.",
-    ],
-  },
   bac: {
     Français: [
       "Comment construire une dissertation de français au bac ?",

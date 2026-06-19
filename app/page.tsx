@@ -133,20 +133,12 @@ export default function Home() {
 
         <section className="app-section-alt py-20">
           <div className="mx-auto max-w-6xl px-6">
-            <h2 className="text-3xl font-bold">Espace Brevet & Bac</h2>
+            <h2 className="text-3xl font-bold">Espace Bac</h2>
             <p className="mt-4 max-w-2xl text-lg text-[var(--muted)]">
-              Deux espaces dédiés pour préparer le DNB et le baccalauréat avec
-              des conseils, fiches et quiz adaptés à chaque épreuve.
+              Un espace dédié pour préparer le baccalauréat avec des conseils,
+              fiches, quiz, simulateur de notes et entraînement au grand oral.
             </p>
-            <div className="mt-10 grid gap-6 md:grid-cols-2">
-              <Link href="/examens/brevet" className="app-exam-card app-exam-card-brevet">
-                <span className="text-4xl">🎓</span>
-                <h3 className="mt-4 text-2xl font-bold">Brevet des collèges</h3>
-                <p className="mt-2 text-sm leading-7 opacity-90">
-                  Français, maths, histoire-géo, sciences et anglais — entraîne-toi
-                  au format du DNB.
-                </p>
-              </Link>
+            <div className="mt-10">
               <Link href="/examens/bac" className="app-exam-card app-exam-card-bac">
                 <span className="text-4xl">🏆</span>
                 <h3 className="mt-4 text-2xl font-bold">Baccalauréat</h3>

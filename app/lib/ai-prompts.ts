@@ -14,13 +14,6 @@ export function basePrompt(
     prompt += ` L'élève a choisi la spécialité : ${specialty}. Tiens-en compte dans tes explications et exemples.`;
   }
 
-  if (examType === "brevet") {
-    prompt +=
-      " L'élève prépare le Diplôme National du Brevet (DNB). Adapte tes réponses au format des épreuves du brevet " +
-      "(français, maths, histoire-géo-EMC, sciences, langues). Donne des conseils méthodologiques concrets " +
-      "et des entraînements proches des sujets officiels.";
-  }
-
   if (examType === "bac") {
     prompt +=
       " L'élève prépare le baccalauréat. Adapte tes réponses aux épreuves du bac " +
@@ -88,7 +81,7 @@ export function buildUserContent(
 ): string {
   const specialtyLine = specialty ? `\nSpécialité : ${specialty}` : "";
   const examLine = examType
-    ? `\nPréparation examen : ${examType === "brevet" ? "Brevet des collèges" : "Baccalauréat"}`
+    ? "\nPréparation examen : Baccalauréat"
     : "";
   const base =
     `Classe : ${studentClass}${specialtyLine}${examLine}\nMatière : ${subject}\nThème / chapitre : ${question}`;

@@ -1,14 +1,16 @@
 export const studentClasses = [
-  "6ème",
-  "5ème",
-  "4ème",
-  "3ème",
   "Seconde",
   "Première",
   "Terminale",
 ] as const;
 
 export type StudentClass = (typeof studentClasses)[number];
+
+export function normalizeStudentClass(value: string | undefined): StudentClass {
+  return studentClasses.includes(value as StudentClass)
+    ? (value as StudentClass)
+    : "Seconde";
+}
 
 export const specialties = [
   "Mathématiques",
@@ -109,7 +111,7 @@ export type ConversationEntry = {
   question: string;
   answer: string;
   createdAt: string;
-  diploma?: "brevet" | "bac";
+  diploma?: "bac";
 };
 
 export type QuizQuestion = {

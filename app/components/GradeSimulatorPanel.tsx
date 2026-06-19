@@ -1,27 +1,11 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import type { ExamDiploma } from "../lib/exam-constants";
 import {
   getGradeFields,
   simulateBacAverage,
-  simulateBrevetAverage,
   type BacScores,
-  type BrevetScores,
 } from "../lib/grade-simulator";
-
-type Props = {
-  diploma: ExamDiploma;
-};
-
-const defaultBrevet: BrevetScores = {
-  francais: 12,
-  maths: 11,
-  histoireGeo: 13,
-  sciences: 12,
-  oral: 14,
-  controleContinu: 13,
-};
 
 const defaultBac: BacScores = {
   specialite: 13,
@@ -32,14 +16,10 @@ const defaultBac: BacScores = {
   langue: 13,
 };
 
-export function GradeSimulatorPanel({ diploma }: Props) {
-  const [brevetScores, setBrevetScores] = useState(defaultBrevet);
+export function GradeSimulatorPanel() {
   const [bacScores, setBacScores] = useState(defaultBac);
 
-  const result =
-    diploma === "brevet"
-      ? simulateBrevetAverage(brevetScores)
-      : simulateBacAverage(bacScores);
+  const result = simulateBacAverage(bacScores);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -47,15 +27,13 @@ export function GradeSimulatorPanel({ diploma }: Props) {
 
   return (
     <section className="app-card mt-8 p-5">
-      <h2 className="text-xl font-bold">
-        Simulateur de notes · {diploma === "brevet" ? "Brevet" : "Bac"}
-      </h2>
+      <h2 className="text-xl font-bold">Simulateur de notes · Bac</h2>
       <p className="mt-1 text-sm text-[var(--muted)]">
         Estimation simplifiée pour te projeter sur ta moyenne (démo pédagogique).
       </p>
 
       <form onSubmit={handleSubmit} className="mt-5 grid gap-4 sm:grid-cols-2">
-        {getGradeFields(diploma).map((field) => (
+        {getGradeFields().map((field) => (
           <div key={field.key}>
             <label htmlFor={`grade-${field.key}`} className="app-label">
               {field.label}
@@ -66,24 +44,13 @@ export function GradeSimulatorPanel({ diploma }: Props) {
               min={0}
               max={20}
               step={0.5}
-              value={
-                diploma === "brevet"
-                  ? brevetScores[field.key as keyof BrevetScores]
-                  : bacScores[field.key as keyof BacScores]
-              }
+              value={bacScores[field.key as keyof BacScores]}
               onChange={(event) => {
                 const value = Number(event.target.value);
-                if (diploma === "brevet") {
-                  setBrevetScores((current) => ({
-                    ...current,
-                    [field.key]: value,
-                  }));
-                } else {
-                  setBacScores((current) => ({
-                    ...current,
-                    [field.key]: value,
-                  }));
-                }
+                setBacScores((current) => ({
+                  ...current,
+                  [field.key]: value,
+                }));
               }}
               className="app-input"
             />
@@ -92,20 +59,8 @@ export function GradeSimulatorPanel({ diploma }: Props) {
       </form>
 
       <div className="app-card-highlight mt-6 p-5">
-        {"average" in result ? (
-          <>
-            <p className="text-sm text-[var(--muted)]">Moyenne estimée</p>
-            <p className="mt-1 text-3xl font-bold">{result.average}/20</p>
-          </>
-        ) : (
-          <>
-            <p className="text-sm text-[var(--muted)]">Moyenne estimée</p>
-            <p className="mt-1 text-3xl font-bold">{result.finalAverage}/20</p>
-            <p className="mt-2 text-sm text-[var(--muted)]">
-              Points DNB estimés : {result.points}/400
-            </p>
-          </>
-        )}
+        <p className="text-sm text-[var(--muted)]">Moyenne estimée</p>
+        <p className="mt-1 text-3xl font-bold">{result.average}/20</p>
         <p className="mt-3 font-semibold text-[var(--primary-text)]">
           {result.mention}
         </p>
